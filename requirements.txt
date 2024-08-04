@@ -1,4 +1,23 @@
 pandas
-pymongo
+pymongo              
 ipykernel
-pymongo[srv]
+pymongo[srv]        
+boto3               
+mypy-boto3-s3       
+fastapi             
+uvicorn             
+Jinja2             
+python-multipart    
+matplotlib
+PyYAML
+scikit-learn
+seaborn
+from-root           
+xgboost
+dill                
+evidently           
+catboost
+category-encoders   
+distributed
+dask-ml[complete]
+-e .
