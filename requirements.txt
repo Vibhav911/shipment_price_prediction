@@ -1,3 +1,4 @@
+numpy==1.26.2
 pandas
 pymongo              
 ipykernel
@@ -13,11 +14,13 @@ PyYAML
 scikit-learn
 seaborn
 from-root           
-xgboost
+xgboost==2.0.3
+catboost==1.2.3
 dill                
 evidently           
 catboost
-category-encoders   
+category-encoders 
+dask  
 distributed
 dask-ml[complete]
 -e .

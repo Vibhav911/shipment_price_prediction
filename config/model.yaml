@@ -1,1 +1,32 @@
-abc: efe
+train_model:
+  XGBRegressor:
+    learning_rate:
+    - 0.03
+    - 0.06
+    - 0.09
+    max_depth:
+    - 3
+    - 6
+    - 9
+    n_estimators:
+    - 175
+    - 200
+    - 225
+    subsample:
+    - 0.2
+    - 0.5
+    - 0.8
+  CatBoostRegressor:
+    boosting_type:
+    - Ordered
+    depth:
+    - 3
+    - 5
+    l2_leaf_reg:
+    - 2
+    - 5
+    learning_rate:
+    - 0.01
+    - 0.03
+    - 0.06
+base_model_score: '0.2744878823886553'

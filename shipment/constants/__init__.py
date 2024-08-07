@@ -33,3 +33,7 @@ TRANSFORMED_TEST_DATA_DIR = "Transformed_Test"
 TRANSFORMED_TRAIN_DATA_FILE_NAME = "transformed_train_data.npz"
 TRANSFORMED_TEST_DATA_FILE_NAME = 'transformed_test_data.npz'
 PREPROCESSOR_OBJECT_FILE_NAME = 'shipping_preprocessor.pkl'
+
+MODEL_TRAINER_ARTIFACTS_DIR = 'ModelTrainerArtifacts'
+MODEL_FILE_NAME = 'shipment_price_model.pkl'
+MODEL_SAVE_FORMAL = '.pkl'

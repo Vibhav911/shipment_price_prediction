@@ -1,14 +1,23 @@
+from multiprocessing import Array
 import shutil
 import sys
 from typing import Dict, Tuple, List
 import dill
+import pickle
+from pandas.core.dtypes.dtypes import Any
 import xgboost
 import numpy as np
 import pandas as pd
 import yaml
+import xgboost
+import catboost
 from pandas import DataFrame
 from sklearn.metrics import r2_score
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, KFold
+import dask
+import dask_ml
+import distributed
+import joblib
 from sklearn.utils import all_estimators
 from yaml import safe_dump
 from shipment.constants import *
@@ -37,7 +46,7 @@ class MainUtils:
         except Exception as e:
             raise shippingException(e, sys) from e
 
-    def save_numpy_array_data(self, file_path: str, array: np.array):
+    def save_numpy_array_data(self, file_path: str, array: np.array) :
         logging.info("Entered the save_numpy_array_data method of MainUtils class")
         try:
             with open(file_path, "wb") as file_obj:
@@ -97,6 +106,8 @@ class MainUtils:
         try:
             if model_name.lower().startswith("xgb") is True:
                 model = xgboost.__dict__[model_name]()
+            elif model_name.lower().startswith("cat") is True:
+                model = catboost.__dict__[model_name]()
             else:
                 model_idx = [model[0] for model in all_estimators()].index(model_name)
                 model = all_estimators().__getitem__(model_idx)[1]()
@@ -121,6 +132,8 @@ class MainUtils:
             model_grid = GridSearchCV(
                 model, model_param_grid, verbose=VERBOSE, cv=CV, n_jobs=N_JOBS
             )
+            
+           #  with joblib.parallel_backend('dask'):
             model_grid.fit(x_train, y_train)
             logging.info("Exited the get_model_params method of MainUtils class")
             return model_grid.best_params_
@@ -129,11 +142,11 @@ class MainUtils:
             raise shippingException(e, sys) from e
 
     @staticmethod
-    def save_object(file_path: str, obj: object) -> None:
+    def save_object(file_path: str, obj: object) -> str:
         logging.info("Entered the save_object method of MainUtils class")
         try:
             with open(file_path, "wb") as file_obj:
-                dill.dump(obj, file_obj)
+                pickle.dump(obj, file_obj)
 
             logging.info("Exited the save_object method of MainUtils class")
 
@@ -163,7 +176,7 @@ class MainUtils:
         logging.info("Entered the load_object method of MainUtils class")
         try:
             with open(file_path, "rb") as file_obj:
-                obj = dill.load(file_obj)
+                obj = pickle.load(file_obj)
             logging.info("Exited the load_object method of MainUtils class")
             return obj
 

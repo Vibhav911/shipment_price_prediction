@@ -171,7 +171,7 @@ class DataTransformation:
             logging.info(f"Saved test array to {os.path.basename(self.data_transformation_config.DATA_TRANSFORMATION_ARTIFACTS_DIR)}")
             
             # Saving the preprocessor object to data transformation artifacts directory
-            preprocessor_obj_file = self.data_transformation_config.UTILS.save_numpy_array_data(
+            preprocessor_obj_file = self.data_transformation_config.UTILS.save_object(
                 self.data_transformation_config.PREPROCESSOR_FILE_PATH, preprocessor
             )
             logging.info("Saved the preprocessor object in DataTransformation artifacts directoory")
