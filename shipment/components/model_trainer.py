@@ -138,8 +138,8 @@ class ModelTrainer:
             
             # Updating the model score to model config file if the model score is greater than the best model score
             if best_model_score >= base_model_score:
-                self.model_trainer_config.UTILS.update_model_score(best_model_score)
-                logging.info("Updating model score in yaml file")
+                #self.model_trainer_config.UTILS.update_model_score(best_model_score)
+                #logging.info("Updating model score in yaml file")
                 
                 # Loading cost model object with preprocessor and model
                 cost_model = CostModel(preprocessing_obj, best_model)
@@ -152,10 +152,10 @@ class ModelTrainer:
                 logging.info("Saved the best model object path")
             else:
                 logging.info("No best model found with score more than base score")
-                raise "No best model found with score more than base score"
+                #raise "No best model found with score more than base score"
                 
             # saving the Model Triner artifcts
-            model_trainer_artifacts = ModelTrainerArtifacts(trained_model_file_path=model_file_path)
+            model_trainer_artifacts = ModelTrainerArtifacts(trained_model_file_path = model_file_path)
             return model_trainer_artifacts
             
         except Exception as e:

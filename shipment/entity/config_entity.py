@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from shipment.logger import logging
 from from_root import from_root
 import os
-# from shipment.configuration.s3_operation import S3Operation
+from shipment.configuration.s3_operation import S3Operation
 from shipment.utils.main_utils import MainUtils
 from shipment.constants import *
 
@@ -100,4 +100,15 @@ class ModelTrainerConfig:
         )
         self.TRAINED_MODEL_FILE_PATH: str = os.path.join(
             self.MODEL_TRAINER_ARTIFACTS_DIR, MODEL_FILE_NAME
+        )
+        
+# Model Evaluation Configuration
+@dataclass
+class ModelEvaluationConfig:
+    def __init__(self):
+        self.S3_OPERATIONS = S3Operation()
+        self.UTILS = MainUtils()
+        self.BUCKET_NAME: str = BUCKET_NAME
+        self.BEST_MODEL_PATH: str = os.path.join(
+            from_root(), ARTIFACTS_DIR, MODEL_TRAINER_ARTIFACTS_DIR, MODEL_FILE_NAME
         )

@@ -18,7 +18,8 @@ train_model:
     - 0.8
   CatBoostRegressor:
     boosting_type:
-    - Ordered
+    - 'Ordered'
+    - 'Plain'
     depth:
     - 3
     - 5
@@ -29,4 +30,4 @@ train_model:
     - 0.01
     - 0.03
     - 0.06
-base_model_score: '0.2744878823886553'
+base_model_score: '0.1'

@@ -163,3 +163,5 @@ cython_debug/
 
 artifacts/*
 shipment_env/*
+shipment-user_accessKeys.csv
+data/*
