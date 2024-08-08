@@ -19,14 +19,20 @@ class DataTransformationArtifacts:
     transformed_train_file_path: str
     transformed_test_file_path: str
     
-# Model Trainer
+# Model Trainer Artifact
 @dataclass
 class ModelTrainerArtifacts:
     trained_model_file_path: str
     
-# Model Evaluation
+# Model Evaluation Artifacts
 @dataclass
 class ModelEvaluationArtifact:
     is_model_accepted: bool
     trained_model_path: str
     changed_accuracy: float
+    
+# Model Pusher Artifacts
+@dataclass
+class ModelPusherArtifacts:
+    bucket_name: str
+    s3_model_path: str

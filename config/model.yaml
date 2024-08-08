@@ -1,21 +1,21 @@
 train_model:
   XGBRegressor:
     learning_rate:
-    - 0.03
+    - 0.04
     - 0.06
-    - 0.09
+    - 0.08
     max_depth:
-    - 3
+    - 4
     - 6
-    - 9
+    - 8
     n_estimators:
     - 175
     - 200
     - 225
     subsample:
-    - 0.2
+    - 0.3
     - 0.5
-    - 0.8
+    - 0.7
   CatBoostRegressor:
     boosting_type:
     - 'Ordered'
@@ -29,5 +29,5 @@ train_model:
     learning_rate:
     - 0.01
     - 0.03
-    - 0.06
+    - 0.05
 base_model_score: '0.1'
