@@ -205,13 +205,11 @@ class DataValidation:
             self.data_validation_config.UTILS.write_json_to_yaml_file(
                 json_report, data_drift_file_path
             )
-            #n_features = float(json_report["metrics"]['result']["number_of_columns"])
-            #n_drifted_features = float(json_report["metrics"]['result']["number_of_drifted_columns"])
-            #if get_ratio:
-                #return n_drifted_features / n_features  # Calculating the drift ratio
-                #else:
-            #return json_report["metrics"]["result"[0]]["dataset_drift"]
-
+            js = json_report["metrics"]["metric"=="DatasetDriftMetric"]["result"]["dataset_drift"]
+            logging.info(f"Is data drifted: {js}")
+            
+            return js
+            
         except Exception as e:
             raise shippingException(e, sys) from e
     
@@ -260,7 +258,7 @@ class DataValidation:
                 and schema_test_num_cols_status is True
                 and schema_train_col_status is True
                 and schema_test_col_status is True
-                #and drift is False 
+                and drift is False 
             ):
                 logging.info("Dataset schema validation completed")
                 drift_status = True

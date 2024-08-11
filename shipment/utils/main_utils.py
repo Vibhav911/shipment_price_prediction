@@ -93,7 +93,7 @@ class MainUtils:
         logging.info("Entered the get_model_score method of MainUtils class")
         try:
             model_score = r2_score(test_y, preds)
-            logging.info("Model score is {}".format(model_score))
+            logging.info("Model score is : {}".format(model_score))
             logging.info("Exited the get_model_score method of MainUtils class")
             return model_score
 

@@ -10,6 +10,8 @@ TIMESTAMP: str = datetime.now().strftime('%d_%m_%Y_%H_%M_%S')
 
 DB_URL = environ['MONGO_DB_URL']
 
+
+
 TARGET_COLUMN = "Cost"
 DB_NAME = "shipmentdata"
 COLLECTION_NAME = 'ship'
@@ -35,9 +37,11 @@ TRANSFORMED_TEST_DATA_FILE_NAME = 'transformed_test_data.npz'
 PREPROCESSOR_OBJECT_FILE_NAME = 'shipping_preprocessor.pkl'
 
 MODEL_TRAINER_ARTIFACTS_DIR = 'ModelTrainerArtifacts'
-MODEL_FILE_NAME = 'shipment_price_model.pkl'
+MODEL_FILE_NAME = 'shipping_price_model.pkl'
 MODEL_SAVE_FORMAL = '.pkl'
 
 BUCKET_NAME = "shipment-model-io-files"
 S3_MODEL_NAME = "shipping_price_model.pkl"
 
+APP_HOST = "0.0.0.0"
+APP_PORT = 8080

@@ -275,3 +275,33 @@ retrained_report = evaluate_models(X_train, X_test, y_train, y_test, models)
 
 # %%
 retrained_report
+
+
+
+
+# %%
+import json
+import sys
+import os
+import pandas as pd
+from pandas import DataFrame
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset
+from typing import Tuple, Union
+import yaml
+# %%
+import yaml
+with open("/home/vibhav911/Documents/DS_Projects/shipment_price_prediction/notebooks/DataDriftReport.yaml", 'r') as stream:
+    data = yaml.safe_load(stream)
+
+def find(key, dictionary):
+    # everything is a dict
+    for k, v in dictionary.items():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find(key, v):
+                yield result
+                
+for x in find("dataset_drift", data):
+    print(xk)

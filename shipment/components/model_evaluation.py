@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-
-from pandas._libs.lib import is_timedelta_or_timedelta64_array
 from shipment.logger import logging
 import os
 import sys
@@ -91,7 +89,7 @@ class ModelEvaluation:
             s3_model_r2_score = None
             s3_model = self.get_s3_model()
             if s3_model is not None:
-                y_hat_s3_model = s3_model.predict()
+                y_hat_s3_model = s3_model.predict(x)
                 s3_model_r2_score = self.model_evaluation_config.UTILS.get_model_score(
                     y, y_hat_s3_model
                 )
@@ -103,7 +101,7 @@ class ModelEvaluation:
             result = EvaluateModelResponse(
                 trained_model_r2_score= trained_model_r2_score,
                 s3_model_r2_score = s3_model_r2_score,
-                # is_model_accepted= trained_model_r2_score > tmp_best_model_score,
+                #is_model_accepted= trained_model_r2_score > tmp_best_model_score,
                 is_model_accepted= True,
                 difference = trained_model_r2_score - tmp_best_model_score
             )
