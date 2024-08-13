@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from typing import Optional
 from uvicorn import run as app_run
 from fastapi.middleware.cors import CORSMiddleware
+import numpy as np
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -108,7 +109,7 @@ async def predictRouteClient(request: Request):
         
         cost_df = shipping_data.get_input_data_frame()
         cost_predictor = CostPredictor()
-        cost_value = round(cost_predictor.predict(X=cost_df)[0],2)
+        cost_value = np.round(cost_predictor.predict(X=cost_df)[0])
         
         return templates.TemplateResponse(
             "index.html",

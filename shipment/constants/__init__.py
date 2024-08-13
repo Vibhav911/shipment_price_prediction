@@ -34,13 +34,14 @@ TRANSFORMED_TRAIN_DATA_DIR = "Transformed_Train"
 TRANSFORMED_TEST_DATA_DIR = "Transformed_Test"
 TRANSFORMED_TRAIN_DATA_FILE_NAME = "transformed_train_data.npz"
 TRANSFORMED_TEST_DATA_FILE_NAME = 'transformed_test_data.npz'
-PREPROCESSOR_OBJECT_FILE_NAME = 'shipping_preprocessor.pkl'
+INPUT_PREPROCESSOR_OBJECT_FILE_NAME = 'shipping_input_preprocessor.pkl'
+TARGET_PREPROCESSOR_OBJECT_FILE_NAME = 'shipping_target_preprocessor.pkl'
 
 MODEL_TRAINER_ARTIFACTS_DIR = 'ModelTrainerArtifacts'
-MODEL_FILE_NAME = 'shipping_price_model.pkl'
+MODEL_FILE_NAME = "shipping_price_model.pkl"
 MODEL_SAVE_FORMAL = '.pkl'
 
-BUCKET_NAME = "shipment-model-io-files"
+BUCKET_NAME = "datascience-projects-bucket"
 S3_MODEL_NAME = "shipping_price_model.pkl"
 
 APP_HOST = "0.0.0.0"

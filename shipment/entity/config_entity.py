@@ -80,8 +80,11 @@ class DataTransformationConfig:
         self.TRANSFORMED_TEST_FILE_PATH: str = os.path.join(
             self.TRANSFORMED_TEST_DATA_DIR, TRANSFORMED_TEST_DATA_FILE_NAME
         )
-        self.PREPROCESSOR_FILE_PATH : str = os.path.join(
-            self.DATA_TRANSFORMATION_ARTIFACTS_DIR, PREPROCESSOR_OBJECT_FILE_NAME
+        self.INPUT_PREPROCESSOR_FILE_PATH : str = os.path.join(
+            self.DATA_TRANSFORMATION_ARTIFACTS_DIR, INPUT_PREPROCESSOR_OBJECT_FILE_NAME
+        )
+        self.TARGET_PREPROCESSOR_FILE_PATH: str = os.path.join(
+            self.DATA_TRANSFORMATION_ARTIFACTS_DIR, TARGET_PREPROCESSOR_OBJECT_FILE_NAME
         )
         
 # Model Trainer Configuration
@@ -96,7 +99,7 @@ class ModelTrainerConfig:
             from_root(), ARTIFACTS_DIR, MODEL_TRAINER_ARTIFACTS_DIR
         )
         self.PREPROCESSOR_OBJECT_FILE_PATH: str = os.path.join(
-            self.DATA_TRANSFORMATION_ARTIFACTS_DIR, PREPROCESSOR_OBJECT_FILE_NAME
+            self.DATA_TRANSFORMATION_ARTIFACTS_DIR, INPUT_PREPROCESSOR_OBJECT_FILE_NAME
         )
         self.TRAINED_MODEL_FILE_PATH: str = os.path.join(
             self.MODEL_TRAINER_ARTIFACTS_DIR, MODEL_FILE_NAME

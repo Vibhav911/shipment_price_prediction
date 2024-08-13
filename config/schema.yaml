@@ -38,10 +38,11 @@
   - Artist Reputation
   - Height
   - Width
-  - Weight
-  - Price Of Sculpture
   - Base Shipping Price
   
+  outlier_columns:
+    - Weight
+    - Price Of Sculpture
   
   categorical_columns:
   - Material
@@ -73,5 +74,9 @@
 
   binary_columns:
   - International
+  - Fragile
+  - Remote Location
+  - Customer Information
+  - Installation Included
 
   target_column: Cost

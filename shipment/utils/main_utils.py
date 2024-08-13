@@ -125,12 +125,13 @@ class MainUtils:
             VERBOSE = 3
             CV = 2
             N_JOBS = -1
+            KF = KFold(n_splits= 3, shuffle=True, random_state=True)
 
             model_name = model.__class__.__name__
             model_config = self.read_yaml_file(filename=MODEL_CONFIG_FILE)
             model_param_grid = model_config["train_model"][model_name]
             model_grid = GridSearchCV(
-                model, model_param_grid, verbose=VERBOSE, cv=CV, n_jobs=N_JOBS
+                model, model_param_grid, verbose=VERBOSE, cv=KF, n_jobs=N_JOBS
             )
             
             #with joblib.parallel_backend('dask'):

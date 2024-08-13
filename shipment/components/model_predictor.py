@@ -111,7 +111,7 @@ class CostPredictor:
             
             # Predicting with best model
             result = best_model.predict(X)
-            logging.info("Exited predict method of the class")
+            logging.info("Exited predict method of the class \n\n")
             return result
             
         except Exception as e:

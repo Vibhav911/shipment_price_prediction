@@ -16,8 +16,14 @@ import joblib
 import dask_ml
 
 class CostModel:
-    def __init__(self, preprocessing_object:object, trained_model_object: object):
-        self.preprocessing_object = preprocessing_object
+    def __init__(
+        self, 
+        input_preprocessing_object:object, 
+        target_preprocessing_object: object, 
+        trained_model_object: object
+    ):
+        self.input_preprocessing_object = input_preprocessing_object
+        self.target_preprocessing_object = target_preprocessing_object
         self.trained_model_object = trained_model_object
         
     def predict(self, X) -> float:
@@ -30,11 +36,17 @@ class CostModel:
         logging.info("Entered predict method of the class")
         try:
             # Using the trained model to get predictions
-            transformed_feature = self.preprocessing_object.transform(X)
-            logging.info("Used the trained model to get predictions")
+            transformed_feature = self.input_preprocessing_object.transform(X)
+            logging.info("Transforming the values for prediction")
                 
-            return self.trained_model_object.predict(transformed_feature)
-                
+            pred =  self.trained_model_object.predict(transformed_feature)
+            logging.info("Making the prediction")
+            
+            pred = pred.reshape(-1,1)
+            logging.info("Inverse transforming predicted value")
+            return self.target_preprocessing_object.inverse_transform(pred)
+            
+            
         except Exception as e:
             raise shippingException(e, sys) from e
                 
@@ -127,10 +139,15 @@ class ModelTrainer:
             (best_model, best_model_score) = self.model_trainer_config.UTILS.get_best_model_with_name_and_score(list_of_trained_models)
             logging.info("Got best model score, model and model name")
             
-            # Loading the preprocessor object
-            preprocessor_obj_file_path = str(self.data_transformation_artifact.transformed_object_file_path)
-            preprocessing_obj = self.model_trainer_config.UTILS.load_object(preprocessor_obj_file_path)
-            logging.info("Loaded preprocessor object")
+            # Loading the Input preprocessor object
+            input_preprocessor_obj_file_path = str(self.data_transformation_artifact.transformed_input_object_file_path)
+            input_preprocessing_obj = self.model_trainer_config.UTILS.load_object(input_preprocessor_obj_file_path)
+            logging.info("Loaded input preprocessor object")
+            
+            # Loading the target Preprocessor object
+            target_preprocessor_obj_file_path = str(self.data_transformation_artifact.transformed_target_object_file_path)
+            target_preprocessing_obj = self.model_trainer_config.UTILS.load_object(target_preprocessor_obj_file_path)
+            logging.info("Loaded target preprocessing object")
             
             # Redaig model config file for getting the best model
             model_config = self.model_trainer_config.UTILS.read_yaml_file(filename=MODEL_CONFIG_FILE)
@@ -138,11 +155,11 @@ class ModelTrainer:
             
             # Updating the model score to model config file if the model score is greater than the best model score
             if best_model_score >= base_model_score:
-                #self.model_trainer_config.UTILS.update_model_score(best_model_score)
-                #logging.info("Updating model score in yaml file")
+                self.model_trainer_config.UTILS.update_model_score(best_model_score)
+                logging.info("Updating model score in yaml file")
                 
                 # Loading cost model object with preprocessor and model
-                cost_model = CostModel(preprocessing_obj, best_model)
+                cost_model = CostModel(input_preprocessing_obj, target_preprocessing_obj, best_model)
                 logging.info("Created cost modelobject with preprocessor and model")
                 trained_model_path = self.model_trainer_config.TRAINED_MODEL_FILE_PATH
                 logging.info("Created best model file path")

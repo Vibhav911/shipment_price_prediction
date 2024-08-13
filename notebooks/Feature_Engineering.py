@@ -5,17 +5,19 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 %matplotlib inline
 import warnings
+
 import dask
 import dask_ml
 import distributed
 import catboost
+from sklearn.preprocessing import PowerTransformer
 import xgboost
 warnings.filterwarnings('ignore')
 pd.pandas.set_option('display.max_columns', None)
 
 # %%
 df = pd.read_csv('/home/vibhav911/Documents/DS_Projects/shipment_price_prediction/data/train.csv')
-df.head()
+
 
 # %%
 target_feature = 'Cost'
@@ -27,44 +29,50 @@ print('We have {} Non numeric features:{}'.format(len(non_numeric_feature), non_
 
 
 # %%
-df1 = df.copy()
-for i in numeric_feature:
-    df1[i].fillna(df1[i].median(), inplace=True)
+#df1 = df.copy()
+#or i in numeric_feature:
+    #df1[i].fillna(df1[i].median(), inplace=True)
+
+
+
 
 
 # %%
 outlier_features = ['Weight', 'Price Of Sculpture']
-outlier_data = df1[outlier_features]
+#outlier_data = df1[outlier_features]
 
 # %%
 outlier_features = ['Weight', 'Price Of Sculpture']
-outlier_data = df1[outlier_features]
-from sklearn.preprocessing import PowerTransformer
-pt = PowerTransformer(method='box-cox')
-df1[outlier_features] = pt.fit_transform(df1[outlier_features])
-df_outlier = pd.DataFrame(outlier_data, columns=outlier_features)
-df_outlier = pd.DataFrame(outlier_data, columns=outlier_features)
+#outlier_data = df1[outlier_features]
+#from sklearn.preprocessing import PowerTransformer
+#pt = PowerTransformer(method='box-cox')
+#df1[outlier_features] = pt.fit_transform(df1[outlier_features])
+#df_outlier = pd.DataFrame(outlier_data, columns=outlier_features)
+#df_outlier = pd.DataFrame(outlier_data, columns=outlier_features)
 
 # %%
-df1['Cost'] = np.log1p(df1['Cost'])
-df1['Cost'].skew()
+#df['Cost'].fillna(df['Cost'].median(), inplace=True)
+#df['Cost'] = np.log1p(df['Cost'])
+#df['Cost'] = np.abs(df['Cost'])
+#df['Cost'] = PowerTransformer(method='box-cox', standardize=True).fit_transform(df['Cost'].values.reshape(-1,1))
+#type(df['Cost'])
 
 
 
 # %%
 # Convert object datatype to datetime
-df['Scheduled Date'] = pd.to_datetime(df['Scheduled Date'])
-df['Delivery Date'] = pd.to_datetime(df['Delivery Date'])
-df['Month'] = pd.to_datetime(df['Scheduled Date']).dt.month
-df['Year'] = pd.to_datetime(df['Scheduled Date']).dt.year
-numeric_feature.append('Month')
-numeric_feature.append('Year')
+#df['Scheduled Date'] = pd.to_datetime(df['Scheduled Date'])
+#df['Delivery Date'] = pd.to_datetime(df['Delivery Date'])
+#df['Month'] = pd.to_datetime(df['Scheduled Date']).dt.month
+#df['Year'] = pd.to_datetime(df['Scheduled Date']).dt.year
+#numeric_feature.append('Month')
+#numeric_feature.append('Year')
 
 
 # %%
 to_drop_columns = ['Customer Id', 'Artist Name', 'Customer Location', 'Scheduled Date', 'Delivery Date']
 df.drop(columns=to_drop_columns, inplace=True, axis=1)
-df['Cost'].fillna(df['Cost'].median(), inplace=True)
+#df['Cost'].fillna(df['Cost'].median(), inplace=True)
 
 
 
@@ -72,35 +80,74 @@ df['Cost'].fillna(df['Cost'].median(), inplace=True)
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, PowerTransformer, RobustScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from pandas import DataFrame
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+import joblib
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import AdaBoostRegressor, RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, train_test_split, cross_val_score, KFold
-#from catboost import CatBoostRegressor
+from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
 
 
 # %%
-from dask.distributed import Client
-import joblib
-client= Client(processes=False)
 
 
 # %%
 X=df.drop(columns=['Cost'], axis=1)
-y = np.abs(df['Cost'])
-y = np.log1p(y)
+y = df['Cost']
+y.head()
 
+# %%
+y.skew()
+
+
+# %%
+def target_preprocessor(target) -> object:
+    
+    target.fillna(target.median(), inplace=True)
+    target = np.abs(target)
+    target = target.values.reshape(-1,1)
+    pt  =  PowerTransformer(method='box-cox', standardize=True)
+    
+    return target, pt
+    
+
+# %%
+y, preprocessor = target_preprocessor(y)
+
+# %%
+y_new = preprocessor.fit_transform(y)
+
+
+y_new = pd.DataFrame(y_new)
+y_new
+# %%
+target_lambda = preprocessor.lambdas_[0]
+target_lambda
+# %%
+y_old = preprocessor.inverse_transform(y_new)
+
+y_old
+
+
+
+# %%
+pt = PowerTransformer(method='box-cox', standardize=True)
+pt.fit(y.values.reshape(-1,1))
+target_lambda = pt.lambdas_[0]
+y = pt.transform(y.values.reshape(-1,1))
+type(y)
 
 # %%
 X_train, X_test, y_train, y_test = train_test_split(X,y, shuffle=True, test_size=0.2)
 print(X_train.shape, X_test.shape)
 print(y_train.shape, y_test.shape)
-
+type(X_train)
 
 # %%
 numeric_features = [feature for feature in numeric_feature if feature not in outlier_features]
@@ -111,7 +158,7 @@ Categorical_features = [feature for feature in non_numeric_feature if feature no
 # %%
 numeric_feature_pipeline = Pipeline(
     steps= [
-        ('imputer', SimpleImputer(strategy='mean')),
+        ('imputer', SimpleImputer(strategy='median')),
         ('scaler', RobustScaler())
     ]
 )
@@ -127,18 +174,27 @@ outlier_feature_pipeline = Pipeline(
         ('transformer', PowerTransformer(method='box-cox', standardize=True))
     ]
 )
-preprocessor = ColumnTransformer(
+
+input_preprocessor = ColumnTransformer(
     [
-        ('Numeric Pipeline', numeric_feature_pipeline, numeric_features),
+        ('Numeric Pipeline', numeric_feature_pipeline, numeric_feature),
         ('Categorical Pipeline', categorical_feature_pipeline, Categorical_features),
-        ('Outliers Feature Pipeline', outlier_feature_pipeline, outlier_features)
+        ('Outliers Feature Pipeline', outlier_feature_pipeline, outlier_features),
+        
     ]
 )
 
 
+
+
+
 # %%
-X_train = preprocessor.fit_transform(X_train)
-X_test = preprocessor.transform(X_test)
+X_train = input_preprocessor.fit_transform(X_train)
+
+
+X_test = input_preprocessor.transform(X_test)
+type(X_train)
+
 
 
 # %%
@@ -164,8 +220,8 @@ def evaluate_models(X_train, X_test, y_train, y_test, models):
     r2_list = []
     for i in range(0, len(list(models))):
         model = list(models.values())[i]
-        with joblib.parallel_backend('dask'):
-            model.fit(X_train, y_train)
+        #with joblib.parallel_backend('dask'):
+        model.fit(X_train, y_train)
         # Make Predictions
         y_train_predict = model.predict(X_train)
         y_test_predict = model.predict(X_test)
@@ -199,8 +255,8 @@ models = {
     'K-Neighbour Regression': KNeighborsRegressor(),
     'Random Forest Regressor': RandomForestRegressor(),
     'Decision Tree': DecisionTreeRegressor(),
-    #'XGBRegressor': XGBRegressor(),
-    #'CatBoost Regressor': CatBoostRegressor(verbose=False, max_depth=5),
+    'XGBRegressor': XGBRegressor(),
+    'CatBoost Regressor': CatBoostRegressor(verbose=False, max_depth=5),
     'Adaboost Regressor': AdaBoostRegressor(),
     'SVR': SVR()
 }
@@ -216,30 +272,38 @@ base_report
 
 # %%
 svr_params = {
-    'C': [1, 10, 12, 14, 16, 18, 20, 22],
-    'gamma': [0.001, 0.01, 0.1, 1, 2, 5],
-    'epsilon': [0.001, 0.01, 0.1, 1, 2, 4],
-    'kernel': ("rbf", "poly", "sigmoid")
+    'C': [1],
+    'gamma': [0.1],
+    'epsilon': [0.01],
+    'kernel': ["poly"]
     }
 cat_params = {
-    'learning_rate': [0.03, 0.06],
-    'depth':[3, 6, 9],
-    'l2_leaf_reg': [2, 3, 4],
-    'boosting_type': ['Ordered', 'Plain']
+    'learning_rate': [0.03],
+    'depth':[3],
+    'l2_leaf_reg': [2],
+    'boosting_type': ['Ordered']
 }
 rf_params = {
-    'n_estimators': [25, 50, 100, 150],
-    'max_features': ['sqrt', 'log2', None],
-    'max_depth': [3, 6, 9],
-    'max_leaf_nodes': [3, 6, 9],
+    'n_estimators': [150],
+    'max_features': ['sqrt'],
+    'max_depth': [9],
+    'max_leaf_nodes': [6],
 }
-
+xg_param = {
+    'max_depth': [6],
+    'learning_rate': [0.06],
+    'subsample': [0.5],
+    'n_estimators':[200]
+}
 
 # %%
 # Model list for hyperparameter tuning
 randomsearch_model = [
     ('SVR', SVR(), svr_params),
-    ('RandomForestRegressor', RandomForestRegressor(), rf_params)
+    ('RandomForestRegressor', RandomForestRegressor(), rf_params),
+    #('Decision Tree', DecisionTreeRegressor(), decision_params),
+    ('XGBRegressor', XGBRegressor(), xg_param),
+    ('CatBoost Regressor',CatBoostRegressor(verbose=False),cat_params)
 ]
 kf = KFold(n_splits=3, random_state=1, shuffle=True)
 
@@ -247,15 +311,14 @@ kf = KFold(n_splits=3, random_state=1, shuffle=True)
 # %%
 model_param = {}
 for name, model, params in randomsearch_model:
-    random = RandomizedSearchCV(estimator=model,
-                                param_distributions=params,
-                                n_iter=50,
+    random = GridSearchCV(estimator=model,
+                                param_grid=params,
                                 cv=kf,
                                 verbose=1,
                                 n_jobs=-1)
-    with joblib.parallel_backend('dask'):
-        random.fit(X_train, y_train)
-        model_param[name] = random.best_params_
+    #with joblib.parallel_backend('dask'):
+    random.fit(X_train, y_train)
+    model_param[name] = random.best_params_
 for model_name in model_param:
     print(f'--------- Best Params for {model_name} ---------')
     print(model_param[model_name])
@@ -263,9 +326,12 @@ for model_name in model_param:
 
 # %%
 models = {
-    'Random Forest Regressor': RandomForestRegressor(**model_param['RandomForestRegressor'], n_jobs=-1),
-    #'Catboost': CatBoostRegressor(**model_param['Catboost'], verbose=False),
-    'SVR': SVR(**model_param['SVR'], verbose=False)
+    'Catboost': CatBoostRegressor(**model_param['CatBoost Regressor'], verbose=False),
+    'XGBRegressor': XGBRegressor(**model_param["XGBRegressor"], n_jobs=-1),
+    'SVR': SVR(**model_param['SVR'], verbose=False),
+   # 'Decision Tree': DecisionTreeRegressor(**model_param['Decision Tree']),
+    'Random Forest Regressor': RandomForestRegressor(**model_param['RandomForestRegressor'], verbose=False)
+
 }
 
 

@@ -50,7 +50,7 @@ class TrainPipeline:
             data_ingestion = DataIngestion(data_ingestion_config=self.data_ingestion_config, mongo_op=self.mongo_op)
             data_ingestion_artifact = data_ingestion.initiate_data_ingestion()
             logging.info("Got the train_set and test_set from mongodb")
-            logging.info("Exited the start_data_ingestion method of TrainPipeline class")
+            logging.info("Exited the start_data_ingestion method of TrainPipeline class \n")
             
             return data_ingestion_artifact
         except Exception as e:
@@ -64,7 +64,7 @@ class TrainPipeline:
                                             data_validation_config=self.data_validation_config)
             data_validation_artifact = data_validation.initiate_data_validation()
             logging.info("Performed the data validation operation")
-            logging.info("Exited the start_data_validation method of TrainPipeline class")
+            logging.info("Exited the start_data_validation method of TrainPipeline class \n")
             return data_validation_artifact
         
         except Exception as e:
@@ -84,7 +84,7 @@ class TrainPipeline:
                 data_transformation_config= self.data_transformation_config
             )
             data_transformation_artifact = (data_transformation.initiate_data_transformation())
-            logging.info("Exited the start_data_transforamtion method of TrainPipeline class")
+            logging.info("Exited the start_data_transforamtion method of TrainPipeline class \n")
             
             return data_transformation_artifact
         except Exception as e:
@@ -96,11 +96,13 @@ class TrainPipeline:
         self, data_transformation_artifact: DataTransformationArtifacts
     ) -> ModelTrainerArtifacts:
         try:
+            logging.info("Entered the start_model_trainer method of TrainPipeline class")
             model_trainer = ModelTrainer(
                 data_transformation_artifact= data_transformation_artifact,
                 model_trainer_config=self.model_trainer_config
             )
             model_trainer_artifact = model_trainer.initiate_model_trainer()
+            logging.info("Exited the start_model_trainer method of TrainPipeline class \n")
             return model_trainer_artifact
         
         except Exception as e:
@@ -113,12 +115,15 @@ class TrainPipeline:
         model_trainer_artifact: ModelTrainerArtifacts
     )  -> ModelEvaluationArtifact:
         try:
+            logging.info("Entered the start_model_evaluation method of TrainPipeline class")
             model_evaluation = ModelEvaluation(
                 model_evaluation_config=self.model_evaluation_config,
                 data_ingestion_artifact= data_ingestion_artifact,
                 model_trainer_artifact= model_trainer_artifact
             )
             model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
+            logging.info("Exited the start_model_evluation method of TrainPipeline class \n")
+            
             return model_evaluation_artifact
             
         except Exception as e:
@@ -143,7 +148,7 @@ class TrainPipeline:
             
             model_pusher_artifact = model_pusher.initiate_model_pusher()
             logging.info("Initiated the model pusher")
-            logging.info("Exited the start_model_pusher method of TrainPipeline class")
+            logging.info("Exited the start_model_pusher method of TrainPipeline class \n")
             return model_pusher_artifact
         
         except Exception as e:
