@@ -161,7 +161,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-artifacts/*
-shipment_env/*
+artifacts/
+shipment_env/
 shipment-user_accessKeys.csv
-data/*
+docs/

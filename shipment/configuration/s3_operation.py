@@ -139,22 +139,7 @@ class S3Operation:
             model = pickle.loads(model_obj)
             logging.info("Exited the load_model method of S3Operations class")
             return model
-            
-            """
-            # Store contents of bucket
-            objects_list = self.s3_client.list_objects_v2(Bucket=bucket_name).get("Contents")
-            # Iterate over every object in bucket
-            for obj in objects_list:
-                #  Store object name
-                obj_name = obj["Key"]
-                # Read an object from the bucket
-                response = self.s3_client.get_object(Bucket=bucket_name, Key=model_name)
-                # Read the object’s content as text
-                object_content = response["Body"].read().decode("utf-8")
-                # Print all the contents
-                print(f"Contents of {obj_name}\n--------------")
-                print(object_content, end="\n\n")
-            """
+  
            
             
         except Exception as e:

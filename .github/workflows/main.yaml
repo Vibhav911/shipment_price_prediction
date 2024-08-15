@@ -67,7 +67,7 @@ jobs:
 
   Continuous-Deployment:
     needs: build-and-push-ecr-image
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
@@ -91,13 +91,11 @@ jobs:
     
     # - name: Stop and remove container if running
     #   run: |
-    #     docker ps -q --filter "name=mlproj" | grep -q . && docker stop mlproj && docker rm -fv mlproj
+    #     docker ps -q --filter "name=shipment" | grep -q . && docker stop shipment && docker rm -fv shipment
 
       - name: Run Docker Image to serve users
         run: |
-          docker run -d -p 8080:8080 --name=shipment -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 
-          'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  
-          ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          docker run -d -p 8080:8080 --name=shipment -e 'MONGO_DB_URL=${{ secrets.MONGO_DB_URL }}' -e  'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e  'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'   ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
           
       - name: Clean previous images and containers
         run: |
