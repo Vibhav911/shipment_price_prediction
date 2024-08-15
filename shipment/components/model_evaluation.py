@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from shipment.logger import logging
 import os
+import numpy as np
+from sklearn.metrics import accuracy_score, classification_report
 import sys
 import pandas as pd
 from shipment.exception import shippingException
@@ -48,7 +50,7 @@ class ModelEvaluation:
             # If model is present then loading the model
             if status == True:
                 model = self.model_evaluation_config.S3_OPERATIONS.load_model(
-                    MODEL_FILE_NAME, BUCKET_NAME
+                     bucket_name = BUCKET_NAME, model_name = MODEL_FILE_NAME
                 )
                 logging.info("Exited the get_s3_model method of Model Evaluation class")
                 return model
@@ -71,29 +73,35 @@ class ModelEvaluation:
             # Reading the test data and splitting it into train and test
             test_df = pd.read_csv(self.data_ingestion_artifact.test_data_file_path)
             x, y = test_df.drop(TARGET_COLUMN, axis=1), test_df[TARGET_COLUMN]
+
             logging.info("Splitting the test data into train and test")
             
             # Loading production model for prediction
             trained_model = self.model_evaluation_config.UTILS.load_object(
                 self.model_trainer_artifact.trained_model_file_path
             )
-            y_hat_trained_model = trained_model.predict(x)
-            logging.info("Prediction done with production model")
+            _, y_hat_trained_model = trained_model.predict(x)
+            logging.info(f"Prediction done with production model")
+            logging.info(f"X values - {y_hat_trained_model[567]}")
+            # Preprocessing the y 
+            processed_y = trained_model.preprocess(y)
+            logging.info(f"y values - {processed_y[567]} ")
             
             # checking the r2 score of production model
             trained_model_r2_score = self.model_evaluation_config.UTILS.get_model_score(
-                y, y_hat_trained_model
+                processed_y, y_hat_trained_model
             )
-            
             # Loading the s3 model
             s3_model_r2_score = None
             s3_model = self.get_s3_model()
             if s3_model is not None:
-                y_hat_s3_model = s3_model.predict(x)
+                _, y_hat_s3_model = s3_model.predict(x)
+                logging.info(f" s3values - {y_hat_s3_model[567]}")
+
                 s3_model_r2_score = self.model_evaluation_config.UTILS.get_model_score(
-                    y, y_hat_s3_model
+                    processed_y, y_hat_s3_model
                 )
-                
+                logging.info("Scores calculated using s3 model")
             # Saving the s3 model r2 score in tml_best_model_score variable
             tmp_best_model_score = 0 if s3_model_r2_score is None else s3_model_r2_score
             

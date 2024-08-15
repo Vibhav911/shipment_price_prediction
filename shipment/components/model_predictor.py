@@ -110,7 +110,7 @@ class CostPredictor:
             logging.info("Loaded best model from s3 bucket")
             
             # Predicting with best model
-            result = best_model.predict(X)
+            result,_ = best_model.predict(X)
             logging.info("Exited predict method of the class \n\n")
             return result
             

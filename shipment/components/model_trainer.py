@@ -1,4 +1,6 @@
 import os
+from ctypes import Array
+import numpy as np
 from shipment.logger import logging
 import sys
 import pandas as pd
@@ -11,9 +13,7 @@ from shipment.entity.artifacts_entity import (
     ModelTrainerArtifacts
 )
 from shipment.exception import shippingException
-from dask.distributed import Client
 import joblib
-import dask_ml
 
 class CostModel:
     def __init__(
@@ -26,7 +26,7 @@ class CostModel:
         self.target_preprocessing_object = target_preprocessing_object
         self.trained_model_object = trained_model_object
         
-    def predict(self, X) -> float:
+    def predict(self, X) :
         """
         Method Name :   predict
         Description :   This method predicts the data.   
@@ -42,14 +42,26 @@ class CostModel:
             pred =  self.trained_model_object.predict(transformed_feature)
             logging.info("Making the prediction")
             
-            pred = pred.reshape(-1,1)
+            ogi = pred.reshape(-1,1)
             logging.info("Inverse transforming predicted value")
-            return self.target_preprocessing_object.inverse_transform(pred)
             
-            
+            final = self.target_preprocessing_object.inverse_transform(ogi)
+            return final, pred
+        
         except Exception as e:
             raise shippingException(e, sys) from e
                 
+    def preprocess(self, y) -> Tuple[Array, object]:
+        try:
+            y.fillna(y.median(), inplace=True)
+            y = np.abs(y)
+            y = y.values.reshape(-1,1)
+            preprocessed_y = self.target_preprocessing_object.transform(y)
+            return preprocessed_y
+        
+        except Exception as e:
+            raise shippingException(e, sys) from e 
+        
     def __repr__(self):
         return f'{type(self.trained_model_object).__name__}()'
         
@@ -64,7 +76,6 @@ class ModelTrainer:
     ):
         self.data_transformation_artifact = data_transformation_artifact
         self.model_trainer_config = model_trainer_config
-        # client= Client(processes=False)
         
     # This method is used to get the trained models
     def get_trained_models(self, x_data: DataFrame, y_data: DataFrame) -> List[Tuple[float, object, str]]:

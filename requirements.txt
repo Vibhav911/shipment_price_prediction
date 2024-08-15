@@ -20,7 +20,4 @@ dill
 evidently           
 catboost
 category-encoders 
-dask  
-distributed
-dask-ml[complete]
 -e .

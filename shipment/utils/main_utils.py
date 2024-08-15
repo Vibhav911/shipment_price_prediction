@@ -14,9 +14,6 @@ import catboost
 from pandas import DataFrame
 from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV, KFold
-import dask
-import dask_ml
-import distributed
 import joblib
 from sklearn.utils import all_estimators
 from yaml import safe_dump
@@ -80,8 +77,12 @@ class MainUtils:
             model_best_params = self.get_model_params(model, train_x, train_y)
             model.set_params(**model_best_params)
             model.fit(train_x, train_y)
-            preds = model.predict(test_x)
-            model_score = self.get_model_score(test_y, preds)
+            pred_train = model.predict(train_x)
+            pred_test = model.predict(test_x)
+            logging.info("First, finding r2 score of model on training data")
+            model_score = self.get_model_score(train_y, pred_train)
+            logging.info("Second, finding r2 score of model on testing data")
+            test_model_score = self.get_model_score(test_y, pred_test)
             logging.info("Exited the get_tuned_model method of MainUtils class")
             return model_score, model, model.__class__.__name__
 
@@ -134,7 +135,6 @@ class MainUtils:
                 model, model_param_grid, verbose=VERBOSE, cv=KF, n_jobs=N_JOBS
             )
             
-            #with joblib.parallel_backend('dask'):
             model_grid.fit(x_train, y_train)
             logging.info("Exited the get_model_params method of MainUtils class")
             return model_grid.best_params_

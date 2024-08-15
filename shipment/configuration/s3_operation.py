@@ -2,7 +2,9 @@ import os
 import pickle
 import sys
 from io import StringIO
-from typing import List, Union
+from typing import List, Union, Literal
+
+from pandas.core.dtypes.cast import Literal
 from shipment.constants import *
 import boto3
 from shipment.exception import shippingException
@@ -87,7 +89,7 @@ class S3Operation:
             raise shippingException(e, sys) from e
 
     def get_file_object(
-        self, filename: str, bucket_name: str
+        self, bucket_name: str, model_file: str
     ) -> Union[List[object], object]:
         """
         Method Name :   get_file_object
@@ -99,8 +101,9 @@ class S3Operation:
         """
         logging.info("Entered the get_file_object method of S3Operations class")
         try:
+            
             bucket = self.get_bucket(bucket_name)
-            lst_objs = [object for object in bucket.objects.filter(Prefix=filename)]
+            lst_objs = [object for object in bucket.objects.filter(Prefix=model_file)]
             func = lambda x: x[0] if len(x) == 1 else x
             file_objs = func(lst_objs)
             logging.info("Exited the get_file_object method of S3Operations class")
@@ -123,18 +126,37 @@ class S3Operation:
         logging.info("Entered the load_model method of S3Operations class")
 
         try:
+            #obj = self.s3_client.get_object(Bucket=bucket_name, Key=model_name)
+            
             func = (
                 lambda: model_name
                 if model_dir is None
                 else model_dir + "/" + model_name
             )
             model_file = func()
-            f_obj = self.get_file_object(model_file, bucket_name)
+            f_obj = self.get_file_object(bucket_name, model_file)
             model_obj = self.read_object(f_obj, decode=False)
             model = pickle.loads(model_obj)
             logging.info("Exited the load_model method of S3Operations class")
             return model
-
+            
+            """
+            # Store contents of bucket
+            objects_list = self.s3_client.list_objects_v2(Bucket=bucket_name).get("Contents")
+            # Iterate over every object in bucket
+            for obj in objects_list:
+                #  Store object name
+                obj_name = obj["Key"]
+                # Read an object from the bucket
+                response = self.s3_client.get_object(Bucket=bucket_name, Key=model_name)
+                # Read the object’s content as text
+                object_content = response["Body"].read().decode("utf-8")
+                # Print all the contents
+                print(f"Contents of {obj_name}\n--------------")
+                print(object_content, end="\n\n")
+            """
+           
+            
         except Exception as e:
             raise shippingException(e, sys) from e
 

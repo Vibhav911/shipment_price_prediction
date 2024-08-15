@@ -17,4 +17,4 @@ train_model:
     - 2
     learning_rate:
     - 0.03
-base_model_score: '0.9873860017406976'
+base_model_score: '0.9847679789100191'

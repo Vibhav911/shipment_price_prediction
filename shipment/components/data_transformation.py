@@ -10,7 +10,7 @@ from category_encoders.binary import BinaryEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import OneHotEncoder, RobustScaler, PowerTransformer
+from sklearn.preprocessing import OneHotEncoder, RobustScaler, PowerTransformer, StandardScaler
 from shipment.entity.config_entity import DataTransformationConfig
 from shipment.entity.artifacts_entity import (
     DataIngestionArtifacts,
@@ -52,9 +52,9 @@ class DataTransformation:
             numerical_imputer  = SimpleImputer(strategy="median")
             outlier_imputer = SimpleImputer(strategy="median")
             categorical_imputer = SimpleImputer(strategy="most_frequent")
-            numeric_transformer = RobustScaler()
-            categorical_transformer = OneHotEncoder(handle_unknown='ignore', drop="first")
-            outlier_transformer = PowerTransformer(method='box-cox', standardize=True)
+            numeric_transformer = StandardScaler()
+            categorical_transformer = OneHotEncoder(drop="first")
+            outlier_transformer = PowerTransformer(method = "box-cox", standardize=True)
             logging.info("Intialized RobustScaler, OneHotEncoder, SimpleImputer, PowerTransformer")
             
             # Creating Pipeline object for columns
@@ -172,9 +172,8 @@ class DataTransformation:
             logging.info("Got target column name and numerical columns from schema config")
             
             
-            '''
-            # Outlier Capping
             
+            # Outlier Capping
             continuous_columns = [
                 feature for feature in numerical_columns if len(self.train_set[feature].unique()) >= 25
             ]
@@ -185,7 +184,7 @@ class DataTransformation:
             
             [self._outlier_capping(col, self.test_set) for col in continuous_columns]
             logging.info("Outlier capped in test df")
-            '''
+            
             
             # Getting the input features and target feature of the Training dataset
             input_feature_train_df = self.train_set.drop(columns=[target_column_name], axis=1)
@@ -209,7 +208,7 @@ class DataTransformation:
             # applying preprocessed object on target_train feature
             preprocessed_target_train = target_preprocessor.fit_transform(target_train)
             # Getting the lambda values for inverse transformation in model predictor
-            target_lambda = target_preprocessor.lambdas_[0]
+            #target_lambda = target_preprocessor.lambdas_[0]
             # applying preprocessed object on target_test feature
             preprocessed_target_test = target_preprocessor.transform(target_test)
             

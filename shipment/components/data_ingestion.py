@@ -106,7 +106,7 @@ class DataIngestion:
             
             # Dropping the unnecessary column from dataframe
             df1 = df.drop(self.data_ingestion_config.DROP_COLS, axis=1)
-            df1 = df1.dropna()
+            #df1 = df1.dropna()
             logging.info("Got the data from mongodb")
             
             # Splitting the data as train set and test set
