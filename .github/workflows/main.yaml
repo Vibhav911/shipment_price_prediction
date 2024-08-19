@@ -56,7 +56,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-          IMAGE_TAG: latest
+          IMAGE_TAG: shipment-price
         run: |
           # Build a docker container and
           # push it to ECR so that it can
@@ -67,7 +67,7 @@ jobs:
 
   Continuous-Deployment:
     needs: build-and-push-ecr-image
-    runs-on: self-hosted
+    runs-on: shipment_price
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
@@ -91,11 +91,11 @@ jobs:
     
     # - name: Stop and remove container if running
     #   run: |
-    #     docker ps -q --filter "name=shipment-price" | grep -q . && docker stop shipment-price && docker rm -fv shipment-price
+    #     docker ps -q --filter "name=shipment_price" | grep -q . && docker stop shipment_price && docker rm -fv shipment_price
 
       - name: Run Docker Image to serve users
         run: |
-          docker run -d -p 8080:8080 --name=shipment-price -e 'MONGO_DB_URL=${{ secrets.MONGO_DB_URL }}' -e  'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e  'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'   ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          docker run -d -p 8080:8080 --name=shipment_price -e 'MONGO_DB_URL=${{ secrets.MONGO_DB_URL }}' -e  'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e  'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'   ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
           
       - name: Clean previous images and containers
         run: |

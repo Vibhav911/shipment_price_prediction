@@ -34,19 +34,23 @@ source [environment_name]/bin/activate
 pip install -r requirements.txt
 ```
 
+### STEP 03 :- Download the dataset from the repo
+```bash
+shipment_price_prediction.csv
+```
 
-### STEP 03 :- run the following command
+### STEP 04 :- run the following command
 ```bash
 python app.py
 ```
 
-### STEP 04 :- To train the model
+### STEP 05 :- To train the model
 ```bash
 open up you local host and port
 write /train
 ```
 
-### STEP 05 :- To make the predictions
+### STEP 06 :- To make the predictions
 ```bash
 open up you local host and port
 write /predict
