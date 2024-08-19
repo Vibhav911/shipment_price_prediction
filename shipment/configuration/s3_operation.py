@@ -3,7 +3,6 @@ import pickle
 import sys
 from io import StringIO
 from typing import List, Union, Literal
-
 from pandas.core.dtypes.cast import Literal
 from shipment.constants import *
 import boto3
