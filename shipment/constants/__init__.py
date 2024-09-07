@@ -45,4 +45,4 @@ BUCKET_NAME = "datascience-projects-bucket"
 S3_MODEL_NAME = "shipping_price_model.pkl"
 
 APP_HOST = "0.0.0.0"
-APP_PORT = 8081
+APP_PORT = 8080
